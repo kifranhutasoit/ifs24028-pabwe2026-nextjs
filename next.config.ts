@@ -1,17 +1,14 @@
-import type { NextConfig } from 'next';
-
-const DELCOM_TARGET =
-  process.env.NEXT_PUBLIC_DELCOM_BASEURL || 'https://open-api.delcom.org/api/v1';
+import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  experimental: {
-    inlineCss: true,
+  turbopack: {
+    root: process.cwd(),
   },
   async rewrites() {
     return [
       {
-        source: '/api/delcom/:path*',
-        destination: `${DELCOM_TARGET}/:path*`,
+        source: "/api-proxy/:path*",
+        destination: "https://open-api.delcom.org/api/v1/:path*",
       },
     ];
   },
