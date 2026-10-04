@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
+        source: "/api/delcom/:path*",
+        destination: "https://open-api.delcom.org/api/v1/:path*",
+      },
+      {
         source: "/api-proxy/:path*",
         destination: "https://open-api.delcom.org/api/v1/:path*",
       },
