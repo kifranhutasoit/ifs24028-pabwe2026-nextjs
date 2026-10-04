@@ -1,26 +1,15 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import Providers from "@/components/Providers";
-import "./globals.css"; // Gunakan path relative ./globals.css
+import { Bricolage_Grotesque } from "next/font/google";
+import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"], display: "swap" });
+const font = Bricolage_Grotesque({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  title: "DelcomFeed - Praktikum PABWE 2026",
-  description: "Aplikasi Publikasi & Diskusi Mahasiswa",
-  robots: { index: true, follow: true },
-};
+export const metadata: Metadata = { title: "Postingan", description: "Aplikasi Postingan Delcom" };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="id">
-      <body className={inter.className}>
-        <Providers>{children}</Providers>
-      </body>
+      <body className={font.className}>{children}</body>
     </html>
   );
 }

@@ -1,17 +1,11 @@
-"use client";
+import type { ReactNode } from "react";
+import Providers from "@/components/Providers";
+import PostLayout from "@/features/posts/layouts/PostLayout";
 
-import AuthGuard from "@/components/AuthGuard";
-import Navbar from "@/components/Navbar";
-
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <AuthGuard>
-      <div className="min-h-screen bg-slate-900 flex flex-col">
-        <Navbar />
-        <main className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {children}
-        </main>
-      </div>
-    </AuthGuard>
+    <Providers>
+      <PostLayout>{children}</PostLayout>
+    </Providers>
   );
-}
+} 
