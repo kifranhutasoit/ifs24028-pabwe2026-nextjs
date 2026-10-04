@@ -1,5 +1,5 @@
 {
-  "name": "ifs24044-pabwe2026-nextjs",
+  "name": "ifs24028-pabwe2026-nextjs",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -39,11 +39,13 @@
     "typescript": "^5",
     "vitest": "^5.0.3"
   },
-  "packageManager": "bun@1.4.2",
-  "ignoreScripts": [
-    "sharp",
-    "unrs-resolver"
+  "browserslist": [
+    "chrome >= 111",
+    "edge >= 111",
+    "firefox >= 111",
+    "safari >= 16.4"
   ],
+  "packageManager": "bun@1.4.2",
   "trustedDependencies": [
     "sharp",
     "unrs-resolver"
