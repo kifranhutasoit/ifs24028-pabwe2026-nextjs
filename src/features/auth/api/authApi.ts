@@ -1,17 +1,20 @@
-import { apiFetch } from '@/helpers/apiHelper';
+import { fetchApi } from "@/helpers/apiHelper";
 
-export async function login(payload: { email: string; password: string }) {
-  return apiFetch('/auth/login', { method: 'POST', body: payload, auth: false });
-}
+export const authApi = {
+  login: (credentials: Record<string, string>) =>
+    fetchApi("/auth/login", {
+      method: "POST",
+      body: JSON.stringify(credentials),
+    }),
 
-export async function register(payload: {
-  name: string;
-  email: string;
-  password: string;
-}) {
-  return apiFetch('/auth/register', { method: 'POST', body: payload, auth: false });
-}
+  register: (payload: Record<string, string>) =>
+    fetchApi("/auth/register", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
 
-export async function logout() {
-  return apiFetch('/auth/logout', { method: 'POST' });
-}
+  getMe: () => fetchApi("/users/me"),
+
+  /** Cadangan bila backend menyediakan endpoint /auth/me */
+  getMeLegacy: () => fetchApi("/auth/me"),
+};

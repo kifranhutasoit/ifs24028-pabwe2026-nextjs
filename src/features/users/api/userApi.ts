@@ -1,27 +1,20 @@
-import { apiFetch } from '@/helpers/apiHelper';
+import { fetchApi } from "@/helpers/apiHelper";
 
-export async function getUsers() {
-  return apiFetch('/users');
-}
+export const getUserProfile = async (): Promise<unknown> => fetchApi("/users/me");
 
-export async function getProfile() {
-  return apiFetch('/users/me');
-}
+export const getUsers = async (): Promise<unknown> => fetchApi("/users");
 
-export async function updateProfile(payload: { name: string; email: string }) {
-  return apiFetch('/users/me', { method: 'PUT', body: payload });
-}
+export const updateProfile = async (payload: { name: string; bio: string }): Promise<unknown> =>
+  fetchApi("/users/me", {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
 
-export async function changePhoto(file: File) {
-  const formData = new FormData();
-  formData.append('photo', file);
-  return apiFetch('/users/me/photo', { method: 'POST', body: formData, isFormData: true });
-}
-
-export async function changePassword(payload: {
-  password: string;
+export const updatePassword = async (payload: {
+  old_password: string;
   new_password: string;
-  new_password_confirmation: string;
-}) {
-  return apiFetch('/users/password', { method: 'PUT', body: payload });
-}
+}): Promise<unknown> =>
+  fetchApi("/users/password", {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
