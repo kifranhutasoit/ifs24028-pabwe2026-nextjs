@@ -68,7 +68,10 @@ pipeline {
 
                     echo "=== Running Tests with Coverage ==="
 
-                    npx vitest run --coverage
+                    # .env tidak ikut di Git, siapkan dari .env.example agar test bisa jalan
+                    [ -f .env ] || { [ -f .env.example ] && cp .env.example .env || true; }
+
+                    CI=true npx vitest run --coverage
 
                     echo "=== Tests Passed ==="
                 '''
