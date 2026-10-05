@@ -102,15 +102,13 @@ pipeline {
                     echo "        TRIVY SECURITY SCAN"
                     echo "======================================"
 
-                    echo "=== Trivy Version ==="
                     trivy --version
-
-                    echo "=== Trivy Scan ==="
 
                     trivy fs \
                         --cache-dir .trivy-cache \
                         --scanners vuln \
                         --severity HIGH,CRITICAL \
+                        --skip-dirs node_modules,.next,coverage \
                         --format sarif \
                         --output trivy-results.sarif \
                         --exit-code 1 \
@@ -124,7 +122,7 @@ pipeline {
             post {
                 always {
                     // failOnError must be false: otherwise Warnings NG can mark the
-                    // whole build FAILURE while later stages still run (all green, badge red).
+                    // whole build FAILURE while later stages still run.
                     // Build failure on HIGH/CRITICAL comes from trivy --exit-code 1 above.
                     recordIssues(
                         enabledForFailure: true,
@@ -205,6 +203,7 @@ pipeline {
 
                     zip -r latest-app.zip . \
                         -x "node_modules/*" \
+                        -x ".next/*" \
                         -x ".git/*" \
                         -x ".env" \
                         -x ".env.*" \
@@ -231,10 +230,7 @@ pipeline {
 
             steps {
 
-                // ========================================================
-                // 1. ARCHIVE ARTIFACT KE JENKINS
-                // ========================================================
-
+                // 1. Archive artifact ke Jenkins
                 archiveArtifacts(
                     artifacts: 'latest-app.zip',
                     fingerprint: true,
@@ -243,10 +239,7 @@ pipeline {
 
                 script {
 
-                    // ====================================================
-                    // 2. BUAT IDENTITAS APPLICATION
-                    // ====================================================
-
+                    // 2. Identitas application
                     def appName = env.JOB_NAME
                         .replaceAll('[^a-zA-Z0-9._-]', '-')
                         .replaceAll('-+', '-')
@@ -257,10 +250,7 @@ pipeline {
                     echo "Application Name: ${appName}"
                     echo "Build ID: ${buildId}"
 
-                    // ====================================================
-                    // 3. COPY KE USER CONTENT
-                    // ====================================================
-
+                    // 3. Copy ke user content
                     sh """
                         set -e
 
@@ -283,10 +273,7 @@ pipeline {
                             "/var/jenkins_home/userContent/applications/${appName}/${buildId}/latest-app.zip"
                     """
 
-                    // ====================================================
-                    // 4. BUAT PUBLIC ARTIFACT URL
-                    // ====================================================
-
+                    // 4. Public artifact URL
                     def jenkinsBaseUrl = env.BUILD_URL
                         .substring(0, env.BUILD_URL.indexOf('/job/'))
                         .replace('localhost', 'host.docker.internal')
@@ -326,10 +313,7 @@ pipeline {
                     echo "Artifact URL:"
                     echo "${env.ARTIFACT_URL}"
 
-                    // ==================================================
-                    // 1. REQUEST REDEPLOYMENT
-                    // ==================================================
-
+                    // 1. Request redeployment
                     echo ""
                     echo "=== Request Redeployment ==="
 
@@ -353,10 +337,7 @@ pipeline {
                     echo "Redeploy Response:"
                     echo redeployResponse
 
-                    // ==================================================
-                    // 2. POLLING DEPLOYMENT PROGRESS
-                    // ==================================================
-
+                    // 2. Polling deployment progress
                     echo ""
                     echo "=== Waiting For Deployment ==="
 
@@ -399,10 +380,6 @@ pipeline {
                         echo "Progress Response:"
                         echo progressResponse
 
-                        // ==================================================
-                        // PARSE JSON
-                        // ==================================================
-
                         def json = readJSON text: progressResponse
 
                         deploymentStatus = json?.data?.status
@@ -410,16 +387,10 @@ pipeline {
                             ?.toUpperCase()
 
                         if (!deploymentStatus) {
-                            error(
-                                "Response progress tidak memiliki data.status"
-                            )
+                            error("Response progress tidak memiliki data.status")
                         }
 
                         echo "Deployment Status: ${deploymentStatus}"
-
-                        // ==================================================
-                        // SUCCESS
-                        // ==================================================
 
                         if (deploymentStatus == 'SUCCESS') {
 
@@ -430,10 +401,6 @@ pipeline {
 
                             break
                         }
-
-                        // ==================================================
-                        // FAIL
-                        // ==================================================
 
                         if (deploymentStatus == 'FAIL') {
 
@@ -456,10 +423,6 @@ pipeline {
                                 "${WEBSITE_ID}"
                             )
                         }
-
-                        // ==================================================
-                        // OTHER STATUS
-                        // ==================================================
 
                         echo "Deployment masih berjalan..."
                     }
